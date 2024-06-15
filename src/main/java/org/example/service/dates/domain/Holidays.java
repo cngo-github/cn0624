@@ -1,4 +1,4 @@
-package org.example.service.dates;
+package org.example.service.dates.domain;
 
 import org.example.persistence.cache.CacheDao;
 import org.example.persistence.cache.HolidaysCacheDao;

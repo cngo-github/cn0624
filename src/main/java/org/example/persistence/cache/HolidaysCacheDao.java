@@ -6,9 +6,12 @@ import com.google.gson.reflect.TypeToken;
 import org.example.persistence.data.Holiday;
 import org.example.persistence.gson.HolidayListAdapter;
 
+import java.time.Duration;
 import java.util.List;
 
 public class HolidaysCacheDao {
+    public static Duration DEFAULT_TIMEOUT = Duration.ofMinutes(5);
+
     protected final CacheDao cache;
     protected Gson g =
             new GsonBuilder()
@@ -35,5 +38,9 @@ public class HolidaysCacheDao {
 
     public String getKey(int year) {
         return String.format("holidays-%d", year);
+    }
+
+    public void store(int year, List<Holiday> holidays) {
+        cache.set(String.valueOf(year), g.toJson(holidays), DEFAULT_TIMEOUT);
     }
 }
