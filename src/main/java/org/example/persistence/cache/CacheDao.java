@@ -11,13 +11,13 @@ public interface CacheDao {
     /**
      * Perform any necessary setup of the DAO.
      */
-    public default void initialize() {
+    default void initialize() {
     }
 
     /**
      * Perform any necessary tear-down of the DAO.
      */
-    public default void cleanup() {
+    default void cleanup() {
     }
 
     /**
@@ -27,7 +27,7 @@ public interface CacheDao {
      * @param value   the value to cache.
      * @param timeout how long the value should stay valid.
      */
-    public void set(String key, String value, Duration timeout);
+    void set(String key, String value, Duration timeout);
 
     /**
      * Checks if a key exists in the cache and has not timed out.
@@ -37,7 +37,7 @@ public interface CacheDao {
      * out.
      * @throws Exception there was a problem communicating with the cache.
      */
-    public boolean exists(String key) throws Exception;
+    boolean exists(String key) throws Exception;
 
     /**
      * Retrieves the value associated with the key.
@@ -45,5 +45,5 @@ public interface CacheDao {
      * @param key the key that is being queried.
      * @return The value associated with the key.
      */
-    public String get(String key);
+    String get(String key);
 }
