@@ -16,7 +16,6 @@ public class CalendarValidate implements DayValidate {
 
     public boolean isWeekend(String date) {
         LocalDate parsedDate = LocalDate.parse(date);
-
         DayOfWeek day = parsedDate.getDayOfWeek();
 
         return day == DayOfWeek.SATURDAY || day == DayOfWeek.SUNDAY;
