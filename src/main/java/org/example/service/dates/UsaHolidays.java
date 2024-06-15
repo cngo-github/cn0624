@@ -65,7 +65,7 @@ public class UsaHolidays extends Holidays {
         LocalDate parsedDate = LocalDate.parse(date);
         int year = parsedDate.getYear();
 
-        return holidays.get(year).stream().anyMatch(e -> parsedDate.equals(e.getObservedOn()));
+        return holidays.get(year).stream().anyMatch(e -> e.getObservedOn().equals(parsedDate));
     }
 
     private List<Holiday> getFromApi(int year) throws IOException {
@@ -78,7 +78,7 @@ public class UsaHolidays extends Holidays {
                     httpGet,
                     response -> {
                         if (response.getCode() != 200) {
-                            return List.of();
+                            throw new IOException("Received an invalid response from the holidays API.");
                         }
 
                         String body = EntityUtils.toString(response.getEntity());
