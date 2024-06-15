@@ -13,6 +13,7 @@ import org.apache.hc.core5.http.io.support.ClassicRequestBuilder;
 import org.example.persistence.cache.CacheDao;
 import org.example.persistence.cache.CacheEntryNotFound;
 import org.example.persistence.data.Holiday;
+import org.example.service.dates.domain.Holidays;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
@@ -45,7 +46,10 @@ public class UsaHolidays extends Holidays {
                                         "Unable to find the holidays for %s in the cache. Getting it from the API.",
                                         key));
 
-                        return getFromApi(key);
+                        List<Holiday> holidays = getFromApi(key);
+                        cache.store(key, holidays);
+
+                        return holidays;
                     }
                 }
             };
