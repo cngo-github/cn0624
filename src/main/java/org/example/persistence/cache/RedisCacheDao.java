@@ -44,6 +44,7 @@ public class RedisCacheDao implements CacheDao {
         return clientPooled.exists(key);
     }
 
+    @Override
     public void cleanup() {
         LOGGER.trace("Closing.");
 
