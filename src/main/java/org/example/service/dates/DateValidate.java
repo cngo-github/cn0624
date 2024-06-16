@@ -7,10 +7,10 @@ import java.time.DayOfWeek;
 import java.time.LocalDate;
 import java.util.concurrent.ExecutionException;
 
-public class CalendarValidate implements DayValidate {
+public class DateValidate implements DayValidate {
     private final Holidays holidays;
 
-    public CalendarValidate(Holidays holidays) {
+    public DateValidate(Holidays holidays) {
         this.holidays = holidays;
     }
 
