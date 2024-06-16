@@ -10,7 +10,7 @@ import java.util.ArrayList;
 import java.util.List;
 
 public class ToolsSqliteDbDao implements ToolsDbDao {
-    public final SqliteDbDao db;
+    private final SqliteDbDao db;
 
     public ToolsSqliteDbDao(String uri) throws SQLException {
         db = new SqliteDbDao(uri);
