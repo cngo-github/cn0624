@@ -4,6 +4,7 @@ import com.google.gson.Gson;
 import com.google.gson.GsonBuilder;
 import com.google.gson.reflect.TypeToken;
 import org.example.persistence.data.Holiday;
+import org.example.persistence.gson.HolidayAdapter;
 import org.example.persistence.gson.HolidayListAdapter;
 
 import java.time.Duration;
@@ -18,6 +19,7 @@ public class HolidaysCacheDao {
                     .registerTypeAdapter(
                             new TypeToken<List<Holiday>>() {
                             }.getType(), new HolidayListAdapter())
+                    .registerTypeAdapter(Holiday.class, new HolidayAdapter())
                     .create();
 
     public HolidaysCacheDao(CacheDao cache) {
@@ -41,6 +43,6 @@ public class HolidaysCacheDao {
     }
 
     public void store(int year, List<Holiday> holidays) {
-        cache.set(String.valueOf(year), g.toJson(holidays), DEFAULT_TIMEOUT);
+        cache.set(getKey(year), g.toJson(holidays), DEFAULT_TIMEOUT);
     }
 }

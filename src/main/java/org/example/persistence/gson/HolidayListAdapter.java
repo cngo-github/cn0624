@@ -6,7 +6,7 @@ import com.google.gson.stream.JsonWriter;
 import org.example.persistence.data.Holiday;
 
 import java.io.IOException;
-import java.util.LinkedList;
+import java.util.ArrayList;
 import java.util.List;
 
 import static com.google.gson.stream.JsonToken.BEGIN_OBJECT;
@@ -33,7 +33,7 @@ public class HolidayListAdapter extends TypeAdapter<List<Holiday>> {
         String tempName = "";
         String tempDate = "";
 
-        List<Holiday> holidays = new LinkedList<>();
+        List<Holiday> holidays = new ArrayList<>();
         jsonReader.beginArray();
 
         while (jsonReader.hasNext()) {
