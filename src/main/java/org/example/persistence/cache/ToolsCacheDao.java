@@ -39,7 +39,7 @@ public class ToolsCacheDao {
     }
 
     public String getKey() {
-        return "tools-%d";
+        return "tools";
     }
 
     public void store(List<Tool> tools) {

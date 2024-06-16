@@ -39,7 +39,7 @@ public class RentalPriceCacheDao {
     }
 
     public String getKey() {
-        return "prices-%d";
+        return "prices";
     }
 
     public void store(List<RentalPrice> prices) {
