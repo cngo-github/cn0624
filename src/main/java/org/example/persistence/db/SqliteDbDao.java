@@ -7,11 +7,9 @@ import java.sql.*;
 public class SqliteDbDao implements SqlDbDao {
     public static int DEFAULT_TIMEOUT = 30;
     public final Connection connection;
-    private final String uri;
 
     public SqliteDbDao(String uri) throws SQLException {
         this.connection = DriverManager.getConnection(uri);
-        this.uri = uri;
     }
 
     public ResultSet query(String query) throws SQLException {
