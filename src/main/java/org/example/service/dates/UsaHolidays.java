@@ -5,6 +5,7 @@ import com.google.common.cache.CacheLoader;
 import com.google.common.cache.LoadingCache;
 import com.google.gson.JsonObject;
 import com.google.gson.JsonParser;
+import lombok.NonNull;
 import org.apache.hc.client5.http.impl.classic.CloseableHttpClient;
 import org.apache.hc.client5.http.impl.classic.HttpClients;
 import org.apache.hc.core5.http.ClassicHttpRequest;
@@ -17,7 +18,6 @@ import org.example.service.dates.domain.Holidays;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
-import javax.annotation.Nonnull;
 import java.io.IOException;
 import java.time.Duration;
 import java.time.LocalDate;
@@ -31,13 +31,12 @@ public class UsaHolidays extends Holidays {
     public static String COUNTRY_CODE = "US";
     public static Duration DEFAULT_LOCAL_CACHE_EVICTION = Duration.ofHours(1);
 
-    private static final Logger LOGGER = LoggerFactory.getLogger(CacheDao.class);
+    private static final Logger LOGGER = LoggerFactory.getLogger(Holidays.class);
 
     private final CacheLoader<Integer, List<Holiday>> cacheLoader =
             new CacheLoader<>() {
                 @Override
-                @Nonnull
-                public List<Holiday> load(Integer key) throws Exception {
+                public List<Holiday> load(@NonNull Integer key) throws Exception {
                     try {
                         return cache.get(key).stream().toList();
                     } catch (CacheEntryNotFound e) {
@@ -61,11 +60,17 @@ public class UsaHolidays extends Holidays {
         super(cache);
     }
 
-    public boolean isHoliday(String date) throws ExecutionException {
+    public boolean isHoliday(String date) {
         LocalDate parsedDate = LocalDate.parse(date);
         int year = parsedDate.getYear();
 
-        return holidays.get(year).stream().anyMatch(e -> e.getObservedOn().equals(parsedDate));
+        try {
+            return holidays.get(year).stream().anyMatch(e -> e.getObservedOn().equals(parsedDate));
+        } catch (ExecutionException e) {
+            LOGGER.error(String.format("Failed to get the holidays for year %d. Assuming it's not a holiday day.", year), e);
+        }
+
+        return false;
     }
 
     private List<Holiday> getFromApi(int year) throws IOException {

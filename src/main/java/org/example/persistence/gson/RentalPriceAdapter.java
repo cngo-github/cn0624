@@ -4,6 +4,7 @@ import com.google.gson.TypeAdapter;
 import com.google.gson.stream.JsonReader;
 import com.google.gson.stream.JsonWriter;
 import org.example.persistence.data.RentalPrice;
+import org.javamoney.moneta.Money;
 
 import java.io.IOException;
 
@@ -24,7 +25,7 @@ public class RentalPriceAdapter extends TypeAdapter<RentalPrice> {
     @Override
     public RentalPrice read(JsonReader jsonReader) throws IOException {
         String tempType = "";
-        float tempDailyPrice = Float.MAX_VALUE;
+        String tempDailyPrice = "";
         boolean tempWeekdayCharge = true;
         boolean tempWeekendCharge = true;
         boolean tempHolidayCharge = true;
@@ -37,7 +38,7 @@ public class RentalPriceAdapter extends TypeAdapter<RentalPrice> {
                     tempType = jsonReader.nextString();
                     continue;
                 case "dailyPrice":
-                    tempDailyPrice = Float.parseFloat(jsonReader.nextString());
+                    tempDailyPrice = jsonReader.nextString();
                     continue;
                 case "weekdayCharge":
                     tempWeekdayCharge = jsonReader.nextBoolean();
@@ -52,6 +53,9 @@ public class RentalPriceAdapter extends TypeAdapter<RentalPrice> {
 
         jsonReader.endObject();
 
-        return new RentalPrice(tempType, tempDailyPrice, tempWeekdayCharge, tempWeekendCharge, tempHolidayCharge);
+        String[] s = tempDailyPrice.split(" ");
+
+        return new RentalPrice(
+                tempType, Money.of(Float.parseFloat(s[1]), s[0]), tempWeekdayCharge, tempWeekendCharge, tempHolidayCharge);
     }
 }

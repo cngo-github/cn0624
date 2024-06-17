@@ -1,9 +1,9 @@
 package org.example.service.dates.domain;
 
-import java.util.concurrent.ExecutionException;
+import java.time.LocalDate;
 
 public interface DayValidate {
-    boolean isWeekend(String date);
+    boolean isWeekend(LocalDate date);
 
-    boolean isHoliday(String date) throws ExecutionException;
+    boolean isHoliday(LocalDate date);
 }
