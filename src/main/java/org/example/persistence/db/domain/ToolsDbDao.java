@@ -1,24 +1,19 @@
 package org.example.persistence.db.domain;
 
-import java.util.List;
-import java.util.Optional;
+import lombok.NonNull;
 import org.example.persistence.data.RentalPrice;
 import org.example.persistence.data.Tool;
 import org.example.persistence.data.enums.ToolCode;
 import org.example.persistence.data.enums.ToolType;
 
+import java.util.Optional;
+
 public interface ToolsDbDao {
-  default void cleanup() throws Exception {}
+    Optional<Tool> getTool(@NonNull ToolCode code) throws Exception;
 
-  Optional<Tool> getTool(ToolCode code) throws Exception;
+    Optional<RentalPrice> getPrice(@NonNull ToolType type) throws Exception;
 
-  List<Tool> getTools() throws Exception;
+    Optional<String> reserve(@NonNull ToolCode code);
 
-  Optional<RentalPrice> getPrice(ToolType type) throws Exception;
-
-  List<RentalPrice> getPrices() throws Exception;
-
-  Optional<String> reserve(ToolCode code);
-
-  void checkout(String reservationId, ToolType type) throws Exception;
+    void checkout(@NonNull String reservationId, @NonNull ToolType type) throws Exception;
 }
