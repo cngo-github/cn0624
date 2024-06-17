@@ -21,6 +21,7 @@ import org.example.persistence.cache.CacheDao;
 import org.example.persistence.cache.CacheEntryNotFound;
 import org.example.persistence.data.Holiday;
 import org.example.service.dates.domain.Holidays;
+import org.jetbrains.annotations.NotNull;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
@@ -34,6 +35,7 @@ public class UsaHolidays extends Holidays {
 
   private final CacheLoader<Integer, List<Holiday>> cacheLoader =
       new CacheLoader<>() {
+        @NotNull
         @Override
         public List<Holiday> load(@NonNull Integer key) throws Exception {
           try {
