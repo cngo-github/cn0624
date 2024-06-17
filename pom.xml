@@ -82,6 +82,12 @@
             <version>5.10.2</version>
             <scope>test</scope>
         </dependency>
+        <dependency>
+            <groupId>io.oden</groupId>
+            <artifactId>embedded-redis</artifactId>
+            <version>0.0.3</version>
+            <scope>test</scope>
+        </dependency>
     </dependencies>
     <build>
         <plugins>
