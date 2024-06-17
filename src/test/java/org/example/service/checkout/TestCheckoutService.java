@@ -51,7 +51,7 @@ public class TestCheckoutService {
     }
 
     @AfterAll
-    public static void teardown() throws SQLException {
+    public static void tearDown() throws SQLException {
         REDIS_CACHE.cleanup();
         DATABASE_CONN.cleanup();
         REDIS_SERVER.stop();
@@ -308,11 +308,11 @@ public class TestCheckoutService {
         assertTrue(result.isPresent());
         assertTrue(result.get().isRight());
 
-        Optional<RentalAgreement> maybeAgrement = result.map(e -> e.right().value());
+        Optional<RentalAgreement> maybeAgreement = result.map(e -> e.right().value());
 
-        assertTrue(maybeAgrement.isPresent());
+        assertTrue(maybeAgreement.isPresent());
 
-        RentalAgreement agreement = maybeAgrement.get();
+        RentalAgreement agreement = maybeAgreement.get();
 
         assertEquals(ToolCode.JAKR, agreement.getToolCode());
         assertEquals(ToolType.Jackhammer, agreement.getToolType());
@@ -363,11 +363,11 @@ public class TestCheckoutService {
         assertTrue(result.isPresent());
         assertTrue(result.get().isRight());
 
-        Optional<RentalAgreement> maybeAgrement = result.map(e -> e.right().value());
+        Optional<RentalAgreement> maybeAgreement = result.map(e -> e.right().value());
 
-        assertTrue(maybeAgrement.isPresent());
+        assertTrue(maybeAgreement.isPresent());
 
-        RentalAgreement agreement = maybeAgrement.get();
+        RentalAgreement agreement = maybeAgreement.get();
 
         assertEquals(ToolCode.JAKR, agreement.getToolCode());
         assertEquals(ToolType.Jackhammer, agreement.getToolType());
