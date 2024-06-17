@@ -7,7 +7,7 @@ import org.apache.commons.lang3.StringUtils;
 
 @Getter
 public class ValidationErrors {
-  private List<String> errors = new ArrayList<>();
+  private final List<String> errors = new ArrayList<>();
 
   public boolean hasErrors() {
     return !errors.isEmpty();

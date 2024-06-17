@@ -13,7 +13,6 @@ public class DateValidate implements DayValidate {
   }
 
   public boolean isWeekend(LocalDate date) {
-    ;
     DayOfWeek day = date.getDayOfWeek();
 
     return day == DayOfWeek.SATURDAY || day == DayOfWeek.SUNDAY;

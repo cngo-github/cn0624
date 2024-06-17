@@ -1,5 +1,8 @@
 package org.example.persistence.data;
 
+import lombok.Getter;
+
+@Getter
 public class Reservation {
   private final String id;
   private final Tool tool;
@@ -9,17 +12,5 @@ public class Reservation {
     this.id = id;
     this.tool = tool;
     this.price = price;
-  }
-
-  public String getId() {
-    return id;
-  }
-
-  public Tool getTool() {
-    return tool;
-  }
-
-  public RentalPrice getPrice() {
-    return price;
   }
 }
