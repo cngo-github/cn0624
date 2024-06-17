@@ -55,6 +55,9 @@
             <artifactId>functionaljava</artifactId>
             <version>5.0</version>
         </dependency>
+        <!-- The following package uses JUnit 4.12, which is vulnerable to CVE-2020-15250. This is a local information
+        disclosure vulnerability when using the TemporaryFolder folder rule in unit tests. I don't use that rule, so
+        the vulnerability is a non-issue. -->
         <dependency>
             <groupId>org.functionaljava</groupId>
             <artifactId>functionaljava-quickcheck</artifactId>

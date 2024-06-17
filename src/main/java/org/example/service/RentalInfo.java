@@ -16,6 +16,7 @@ import org.example.persistence.data.enums.ToolType;
 import org.example.persistence.db.domain.ToolsDbDao;
 import org.example.service.exception.PriceUnavailable;
 import org.example.service.exception.ToolUnvailable;
+import org.jetbrains.annotations.NotNull;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
@@ -30,6 +31,7 @@ public class RentalInfo {
 
   private final CacheLoader<ToolCode, Tool> toolCacheLoader =
       new CacheLoader<>() {
+        @NotNull
         @Override
         public Tool load(@NonNull ToolCode key) throws Exception {
           Optional<Tool> maybeTool = toolsCache.getTool(key);
@@ -66,6 +68,7 @@ public class RentalInfo {
 
   private final CacheLoader<ToolType, RentalPrice> priceCacheLoader =
       new CacheLoader<>() {
+        @NotNull
         @Override
         public RentalPrice load(@NonNull ToolType key) throws Exception {
           Optional<RentalPrice> maybePrice = pricesCache.getPrice(key);
