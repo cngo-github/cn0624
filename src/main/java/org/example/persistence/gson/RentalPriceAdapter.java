@@ -56,6 +56,10 @@ public class RentalPriceAdapter extends TypeAdapter<RentalPrice> {
         String[] s = tempDailyPrice.split(" ");
 
         return new RentalPrice(
-                tempType, Money.of(Float.parseFloat(s[1]), s[0]), tempWeekdayCharge, tempWeekendCharge, tempHolidayCharge);
+                tempType,
+                Money.of(Float.parseFloat(s[1]), s[0]),
+                tempWeekdayCharge,
+                tempWeekendCharge,
+                tempHolidayCharge);
     }
 }

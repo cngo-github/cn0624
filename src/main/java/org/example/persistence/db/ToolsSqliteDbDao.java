@@ -12,6 +12,9 @@ import org.javamoney.moneta.Money;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
+import javax.money.MonetaryContext;
+import javax.money.MonetaryContextBuilder;
+import java.math.RoundingMode;
 import java.sql.ResultSet;
 import java.sql.SQLException;
 import java.time.LocalDateTime;
@@ -85,7 +88,12 @@ public class ToolsSqliteDbDao implements ToolsDbDao {
                 String[] s = dailyCharge.split(" ");
 
                 RentalPrice p =
-                        new RentalPrice(priceType, Money.of(Float.parseFloat(s[1]), s[0]), weekdayCharge, weekendCharge, holidayCharge);
+                        new RentalPrice(
+                                priceType,
+                                Money.of(Float.parseFloat(s[1]), s[0]),
+                                weekdayCharge,
+                                weekendCharge,
+                                holidayCharge);
 
                 if (price.isEmpty()) {
                     price = Optional.of(p);
@@ -111,8 +119,15 @@ public class ToolsSqliteDbDao implements ToolsDbDao {
 
                 String[] s = dailyCharge.split(" ");
 
+                MonetaryContext currencyPrecision = MonetaryContextBuilder.of(Money.class).set("java.lang.Class", Money.class).set("precision", 3).set("java.math.RoundingMode", RoundingMode.HALF_UP).build();
+
                 RentalPrice p =
-                        new RentalPrice(type, Money.of(Float.parseFloat(s[1]), s[0]), weekdayCharge, weekendCharge, holidayCharge);
+                        new RentalPrice(
+                                type,
+                                Money.of(Float.parseFloat(s[1]), s[0], currencyPrecision),
+                                weekdayCharge,
+                                weekendCharge,
+                                holidayCharge);
                 prices.add(p);
             }
         }
