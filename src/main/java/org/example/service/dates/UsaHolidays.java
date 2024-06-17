@@ -40,7 +40,7 @@ public class UsaHolidays extends Holidays {
                 @Override
                 public List<Holiday> load(@NonNull Integer key) throws Exception {
                     try {
-                        return cache.get(key).stream().toList();
+                        return cache.get(key);
                     } catch (CacheEntryNotFound e) {
                         LOGGER.info(
                                 String.format(

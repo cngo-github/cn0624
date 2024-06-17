@@ -3,6 +3,7 @@ package org.example.persistence.cache;
 import lombok.NonNull;
 
 import java.time.Duration;
+import java.util.Optional;
 
 /**
  * The interface for Cache data access objects.
@@ -42,4 +43,12 @@ public interface CacheDao {
      * @return The value associated with the key.
      */
     String get(@NonNull String key);
+
+    /**
+     * Retrieves the value associated with the key and returns it as an Optional.
+     *
+     * @param key the key that is being queried.
+     * @return The value associated with the key.
+     */
+    Optional<String> getOptional(@NonNull String key);
 }

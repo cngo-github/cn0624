@@ -46,7 +46,7 @@ public class RedisCacheDao implements CacheDao {
         return clientPooled.exists(key);
     }
 
-    public Optional<String> getOptional(String key) {
+    public Optional<String> getOptional(@NotNull String key) {
         LOGGER.trace("Get the value for the key: {}.", key);
 
         return Optional.ofNullable(clientPooled.get(key));
