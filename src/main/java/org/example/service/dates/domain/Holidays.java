@@ -3,8 +3,6 @@ package org.example.service.dates.domain;
 import org.example.persistence.cache.CacheDao;
 import org.example.persistence.cache.HolidaysCacheDao;
 
-import java.util.concurrent.ExecutionException;
-
 public abstract class Holidays {
     protected final HolidaysCacheDao cache;
 
@@ -12,5 +10,5 @@ public abstract class Holidays {
         this.cache = new HolidaysCacheDao(cache);
     }
 
-    abstract public boolean isHoliday(String date) throws ExecutionException;
+    public abstract boolean isHoliday(String date);
 }

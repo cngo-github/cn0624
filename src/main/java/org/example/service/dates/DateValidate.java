@@ -5,7 +5,6 @@ import org.example.service.dates.domain.Holidays;
 
 import java.time.DayOfWeek;
 import java.time.LocalDate;
-import java.util.concurrent.ExecutionException;
 
 public class DateValidate implements DayValidate {
     private final Holidays holidays;
@@ -14,14 +13,14 @@ public class DateValidate implements DayValidate {
         this.holidays = holidays;
     }
 
-    public boolean isWeekend(String date) {
-        LocalDate parsedDate = LocalDate.parse(date);
-        DayOfWeek day = parsedDate.getDayOfWeek();
+    public boolean isWeekend(LocalDate date) {
+        ;
+        DayOfWeek day = date.getDayOfWeek();
 
         return day == DayOfWeek.SATURDAY || day == DayOfWeek.SUNDAY;
     }
 
-    public boolean isHoliday(String date) throws ExecutionException {
-        return holidays.isHoliday(date);
+    public boolean isHoliday(LocalDate date) {
+        return holidays.isHoliday(date.toString());
     }
 }

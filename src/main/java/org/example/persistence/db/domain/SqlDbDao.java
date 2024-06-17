@@ -4,9 +4,9 @@ import java.sql.ResultSet;
 import java.sql.SQLException;
 
 public interface SqlDbDao {
-    ResultSet query(String query) throws SQLException;
+  ResultSet query(String query) throws SQLException;
 
-    void update(String update) throws SQLException;
+  int update(String update) throws SQLException;
 
-    void cleanup() throws SQLException;
+  void cleanup() throws SQLException;
 }
