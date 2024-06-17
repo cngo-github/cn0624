@@ -32,7 +32,7 @@ public class RentalPriceCacheDao {
 
     public Optional<RentalPrice> getPrice(@NonNull ToolType type) {
         String key = getKey(type);
-        Optional<String> maybeJson = ((RedisCacheDao) cache).getOptional(key);
+        Optional<String> maybeJson = cache.getOptional(key);
         return maybeJson.map(j -> g.fromJson(j, RentalPrice.class));
     }
 

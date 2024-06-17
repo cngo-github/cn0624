@@ -20,9 +20,8 @@ public class ToolsCacheDao {
     protected final CacheDao cache;
     protected Gson g =
             new GsonBuilder()
-                    .registerTypeAdapter(
-                            new TypeToken<List<Tool>>() {
-                            }.getType(), new ToolListAdapter())
+                    .registerTypeAdapter(new TypeToken<List<Tool>>() {
+                    }.getType(), new ToolListAdapter())
                     .registerTypeAdapter(Tool.class, new ToolAdapter())
                     .create();
 
@@ -32,7 +31,7 @@ public class ToolsCacheDao {
 
     public Optional<Tool> get(@NonNull ToolCode code) {
         String key = this.getKeyTool(code);
-        Optional<String> maybeJson = ((RedisCacheDao) cache).getOptional(key);
+        Optional<String> maybeJson = cache.getOptional(key);
         return maybeJson.map(j -> g.fromJson(j, Tool.class));
     }
 
