@@ -1,67 +1,68 @@
 package org.example.persistence.gson;
 
-import static com.google.gson.stream.JsonToken.BEGIN_OBJECT;
-
 import com.google.gson.TypeAdapter;
 import com.google.gson.stream.JsonReader;
 import com.google.gson.stream.JsonWriter;
-import java.io.IOException;
-import java.util.ArrayList;
-import java.util.List;
 import lombok.NonNull;
 import org.example.persistence.data.Tool;
 
+import java.io.IOException;
+import java.util.ArrayList;
+import java.util.List;
+
+import static com.google.gson.stream.JsonToken.BEGIN_OBJECT;
+
 public class ToolListAdapter extends TypeAdapter<List<Tool>> {
-  @Override
-  public void write(@NonNull JsonWriter jsonWriter, @NonNull List<Tool> tools) throws IOException {
-    jsonWriter.beginArray();
+    @Override
+    public void write(@NonNull JsonWriter jsonWriter, @NonNull List<Tool> tools) throws IOException {
+        jsonWriter.beginArray();
 
-    for (Tool tool : tools) {
-      jsonWriter.beginObject();
+        for (Tool tool : tools) {
+            jsonWriter.beginObject();
 
-      jsonWriter.name("brand").value(tool.getBrand().toString());
-      jsonWriter.name("code").value(tool.getCode().toString());
-      jsonWriter.name("type").value(tool.getType().toString());
+            jsonWriter.name("brand").value(tool.brand().toString());
+            jsonWriter.name("code").value(tool.code().toString());
+            jsonWriter.name("type").value(tool.type().toString());
 
-      jsonWriter.endObject();
-    }
-
-    jsonWriter.endArray();
-  }
-
-  @Override
-  public List<Tool> read(@NonNull JsonReader jsonReader) throws IOException {
-    String tempBrand = "";
-    String tempCode = "";
-    String tempType = "";
-
-    List<Tool> tools = new ArrayList<>();
-    jsonReader.beginArray();
-
-    while (jsonReader.hasNext()) {
-      if (jsonReader.peek() == BEGIN_OBJECT) {
-        jsonReader.beginObject();
-
-        while (jsonReader.hasNext()) {
-          switch (jsonReader.nextName()) {
-            case "brand":
-              tempBrand = jsonReader.nextString();
-              continue;
-            case "code":
-              tempCode = jsonReader.nextString();
-              continue;
-            case "type":
-              tempType = jsonReader.nextString();
-          }
+            jsonWriter.endObject();
         }
 
-        jsonReader.endObject();
-        Tool t = new Tool(tempBrand, tempCode, tempType);
-        tools.add(t);
-      }
+        jsonWriter.endArray();
     }
 
-    jsonReader.endArray();
-    return tools;
-  }
+    @Override
+    public List<Tool> read(@NonNull JsonReader jsonReader) throws IOException {
+        String tempBrand = "";
+        String tempCode = "";
+        String tempType = "";
+
+        List<Tool> tools = new ArrayList<>();
+        jsonReader.beginArray();
+
+        while (jsonReader.hasNext()) {
+            if (jsonReader.peek() == BEGIN_OBJECT) {
+                jsonReader.beginObject();
+
+                while (jsonReader.hasNext()) {
+                    switch (jsonReader.nextName()) {
+                        case "brand":
+                            tempBrand = jsonReader.nextString();
+                            continue;
+                        case "code":
+                            tempCode = jsonReader.nextString();
+                            continue;
+                        case "type":
+                            tempType = jsonReader.nextString();
+                    }
+                }
+
+                jsonReader.endObject();
+                Tool t = new Tool(tempBrand, tempCode, tempType);
+                tools.add(t);
+            }
+        }
+
+        jsonReader.endArray();
+        return tools;
+    }
 }

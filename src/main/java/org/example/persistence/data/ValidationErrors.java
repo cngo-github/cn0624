@@ -1,24 +1,25 @@
 package org.example.persistence.data;
 
-import java.util.ArrayList;
-import java.util.List;
-import lombok.Getter;
 import org.apache.commons.lang3.StringUtils;
 
-@Getter
-public class ValidationErrors {
-  private final List<String> errors = new ArrayList<>();
+import java.util.ArrayList;
+import java.util.List;
 
-  public boolean hasErrors() {
-    return !errors.isEmpty();
-  }
+public record ValidationErrors(List<String> errors) {
+    public ValidationErrors() {
+        this(new ArrayList<>());
+    }
 
-  public void add(String... newErrors) {
-    errors.addAll(List.of(newErrors));
-  }
+    public boolean hasErrors() {
+        return !errors.isEmpty();
+    }
 
-  @Override
-  public String toString() {
-    return StringUtils.join(errors, ", ");
-  }
+    public void add(String... newErrors) {
+        errors.addAll(List.of(newErrors));
+    }
+
+    @Override
+    public String toString() {
+        return StringUtils.join(errors, ", ");
+    }
 }

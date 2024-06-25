@@ -121,7 +121,7 @@ public class TestCheckoutService {
         assertTrue(maybeErrors.isPresent());
 
         ValidationErrors errors = maybeErrors.get();
-        assertEquals(1, errors.getErrors().size());
+        assertEquals(1, errors.errors().size());
         assertEquals("The discount must be between 0 and 1", errors.toString());
     }
 
