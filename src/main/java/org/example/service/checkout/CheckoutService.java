@@ -39,7 +39,7 @@ public class CheckoutService {
   }
 
   public Optional<Reservation> reserve(@NonNull ToolCode code) {
-    Optional<String> maybeReservationId = this.toolsDb.reserve(code);
+    Optional<String> maybeReservationId = this.toolsDb.reserve(code).toJavaOptional();
     Optional<Tool> tool = this.info.getTool(code).toJavaOptional();
     Optional<RentalPrice> price = tool.flatMap(t -> this.info.getPrice(t.type()).toJavaOptional());
 

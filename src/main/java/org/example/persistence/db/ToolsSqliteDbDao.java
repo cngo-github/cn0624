@@ -6,7 +6,6 @@ import java.sql.SQLException;
 import java.time.LocalDateTime;
 import java.util.ArrayList;
 import java.util.List;
-import java.util.Optional;
 import java.util.UUID;
 import lombok.NonNull;
 import org.example.persistence.data.RentalPrice;
@@ -96,7 +95,7 @@ public class ToolsSqliteDbDao implements ToolsDbDao {
         .flatMap(prices -> Option.when(prices.size() == 1, prices.getFirst()));
   }
 
-  public Optional<String> reserve(@NonNull ToolCode code) {
+  public Option<String> reserve(@NonNull ToolCode code) {
     String reservationId =
         String.format("%s||%s", UUID.randomUUID().toString().replace("-", ""), LocalDateTime.now());
 
@@ -105,34 +104,42 @@ public class ToolsSqliteDbDao implements ToolsDbDao {
             "UPDATE tools SET reservedBy = '%s', reservedAt = '%s' WHERE id = (SELECT id FROM tools WHERE (reservedBy is null AND `code` LIKE '%s' AND `available` = 1) LIMIT 1)",
             reservationId, LocalDateTime.now(), code);
 
-    try {
-      int rowsUpdated = db.update(query);
-
-      if (rowsUpdated == 1) {
-        return Optional.of(reservationId);
-      }
-    } catch (SQLException e) {
-      LOGGER.error(String.format("Unable to reserve the tool %s.", code), e);
-    }
-
-    return Optional.empty();
+    return Try.of(() -> db.update(query))
+        .onFailure(e -> LOGGER.error(String.format("Unable to reserve the tool %s.", code), e))
+        .toOption()
+        .flatMap(count -> Option.when(count == 1, reservationId));
   }
 
-  public void checkout(@NotNull String reservationId, @NotNull ToolType type) throws Exception {
+  public CheckoutResult checkout(@NotNull String reservationId, @NotNull ToolType type) {
     String query =
         String.format(
             "UPDATE tools SET available = FALSE WHERE id = (SELECT id FROM tools WHERE (reservedBy LIKE '%s' AND `type` LIKE '%s'))",
             reservationId, type);
-    int rowsUpdated = db.update(query);
 
-    if (rowsUpdated == 0) {
-      throw new CheckoutFailed(
-          String.format("The checkout of reservation %s for tool %s failed.", reservationId, type));
-    } else if (rowsUpdated > 1) {
-      throw new InvalidDatabaseState(
-          String.format(
-              "The database may be in an invalid state after the checkout reservation %s for tool %s.",
-              reservationId, type));
-    }
+    return Try.of(() -> db.update(query))
+        .map(
+            count -> {
+              if (count == 0) {
+                Exception e =
+                    new CheckoutFailed(
+                        String.format(
+                            "The checkout of reservation %s for tool %s failed.",
+                            reservationId, type));
+
+                return CheckoutResult.failiure(e);
+              } else if (count > 1) {
+                Exception e =
+                    new InvalidDatabaseState(
+                        String.format(
+                            "The database may be in an invalid state after the checkout reservation %s for tool %s.",
+                            reservationId, type));
+
+                return CheckoutResult.failiure(e);
+              }
+
+              return CheckoutResult.success(reservationId);
+            })
+        .recover(CheckoutResult::new)
+        .getOrElse(CheckoutResult.failiure(new Exception("Unknown problem checking out a tool.")));
   }
 }
