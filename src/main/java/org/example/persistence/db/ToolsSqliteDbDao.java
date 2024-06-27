@@ -1,5 +1,9 @@
 package org.example.persistence.db;
 
+import static io.vavr.API.*;
+import static io.vavr.Patterns.$Failure;
+
+import io.vavr.control.Either;
 import io.vavr.control.Option;
 import io.vavr.control.Try;
 import java.sql.SQLException;
@@ -110,36 +114,30 @@ public class ToolsSqliteDbDao implements ToolsDbDao {
         .flatMap(count -> Option.when(count == 1, reservationId));
   }
 
-  public CheckoutResult checkout(@NotNull String reservationId, @NotNull ToolType type) {
+  public Either<Throwable, String> checkout(@NotNull String reservationId, @NotNull ToolType type) {
     String query =
         String.format(
             "UPDATE tools SET available = FALSE WHERE id = (SELECT id FROM tools WHERE (reservedBy LIKE '%s' AND `type` LIKE '%s'))",
             reservationId, type);
 
-    return Try.of(() -> db.update(query))
-        .map(
-            count -> {
-              if (count == 0) {
-                Exception e =
+    Try<Integer> operation = Try.of(() -> db.update(query));
+    return Match(operation)
+        .of(
+            Case($Failure($()), Either::left),
+            Case(
+                $(Success(0)),
+                Either.left(
                     new CheckoutFailed(
                         String.format(
                             "The checkout of reservation %s for tool %s failed.",
-                            reservationId, type));
-
-                return CheckoutResult.failiure(e);
-              } else if (count > 1) {
-                Exception e =
+                            reservationId, type)))),
+            Case($(Success(1)), Either.right(reservationId)),
+            Case(
+                $(),
+                Either.left(
                     new InvalidDatabaseState(
                         String.format(
                             "The database may be in an invalid state after the checkout reservation %s for tool %s.",
-                            reservationId, type));
-
-                return CheckoutResult.failiure(e);
-              }
-
-              return CheckoutResult.success(reservationId);
-            })
-        .recover(CheckoutResult::new)
-        .getOrElse(CheckoutResult.failiure(new Exception("Unknown problem checking out a tool.")));
+                            reservationId, type)))));
   }
 }
