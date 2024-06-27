@@ -3,9 +3,9 @@ package org.example.service;
 import com.google.common.cache.CacheBuilder;
 import com.google.common.cache.CacheLoader;
 import com.google.common.cache.LoadingCache;
+import io.vavr.control.Option;
+import io.vavr.control.Try;
 import java.time.Duration;
-import java.util.Optional;
-import java.util.concurrent.ExecutionException;
 import lombok.NonNull;
 import org.example.persistence.cache.RentalPriceCacheDao;
 import org.example.persistence.cache.ToolsCacheDao;
@@ -108,35 +108,20 @@ public class RentalInfo {
     this.pricesCache = pricesCache;
   }
 
-  public Optional<Tool> getTool(@NonNull ToolCode code) {
-    try {
-      return Optional.of(this.toolMap.get(code));
-    } catch (ExecutionException e) {
-      LOGGER.error(String.format("unable to get the tool %s.", code), e);
-    }
-
-    return Optional.empty();
+  public Option<Tool> getTool(@NonNull ToolCode code) {
+    return Try.of(() -> this.toolMap.get(code))
+        .onFailure(e -> LOGGER.error(String.format("unable to get the tool %s.", code), e))
+        .toOption();
   }
 
-  public Optional<RentalPrice> getPrice(@NonNull ToolType type) {
-    try {
-      return Optional.of(priceMap.get(type));
-    } catch (ExecutionException e) {
-      LOGGER.error(String.format("unable to get the rental price of %s.", type), e);
-    }
-
-    return Optional.empty();
+  public Option<RentalPrice> getPrice(@NonNull ToolType type) {
+    return Try.of(() -> this.priceMap.get(type))
+        .onFailure(
+            e -> LOGGER.error(String.format("unable to get the rental price of %s.", type), e))
+        .toOption();
   }
 
   public boolean validateTool(@NonNull Tool tool) {
-    Tool t;
-
-    try {
-      t = toolMap.get(tool.code());
-    } catch (ExecutionException e) {
-      return false;
-    }
-
-    return tool.equals(t);
+    return getTool(tool.code()).map(tool::equals).contains(true);
   }
 }

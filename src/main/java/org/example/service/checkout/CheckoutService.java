@@ -40,8 +40,8 @@ public class CheckoutService {
 
   public Optional<Reservation> reserve(@NonNull ToolCode code) {
     Optional<String> maybeReservationId = this.toolsDb.reserve(code);
-    Optional<Tool> tool = this.info.getTool(code);
-    Optional<RentalPrice> price = tool.flatMap(t -> this.info.getPrice(t.type()));
+    Optional<Tool> tool = this.info.getTool(code).toJavaOptional();
+    Optional<RentalPrice> price = tool.flatMap(t -> this.info.getPrice(t.type()).toJavaOptional());
 
     return maybeReservationId
         .flatMap(id -> tool.map(t -> Pair.of(id, t)))
