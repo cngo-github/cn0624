@@ -17,7 +17,6 @@ import org.example.persistence.data.Tool;
 import org.example.persistence.data.enums.ToolCode;
 import org.example.persistence.data.enums.ToolType;
 import org.example.persistence.db.domain.ToolsDbDao;
-import org.example.persistence.db.exception.InvalidDatabaseState;
 import org.example.service.exception.CheckoutFailed;
 import org.javamoney.moneta.Money;
 import org.jetbrains.annotations.NotNull;
@@ -25,6 +24,12 @@ import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
 public class ToolsSqliteDbDao implements ToolsDbDao {
+  public static CheckoutFailed CHECKOUT_FAILED_ERROR(
+      @NonNull String reservationId, @NonNull ToolType type) {
+    return new CheckoutFailed(
+        String.format("The checkout of reservation %s for tool %s failed.", reservationId, type));
+  }
+
   private static final Logger LOGGER = LoggerFactory.getLogger(ToolsDbDao.class);
   private final SqliteDbDao db;
 
@@ -126,18 +131,8 @@ public class ToolsSqliteDbDao implements ToolsDbDao {
             Case($Failure($()), Either::left),
             Case(
                 $(Success(0)),
-                Either.left(
-                    new CheckoutFailed(
-                        String.format(
-                            "The checkout of reservation %s for tool %s failed.",
-                            reservationId, type)))),
+                Either.left(ToolsSqliteDbDao.CHECKOUT_FAILED_ERROR(reservationId, type))),
             Case($(Success(1)), Either.right(reservationId)),
-            Case(
-                $(),
-                Either.left(
-                    new InvalidDatabaseState(
-                        String.format(
-                            "The database may be in an invalid state after the checkout reservation %s for tool %s.",
-                            reservationId, type)))));
+            Case($(), Either.left(SqliteDbDao.INVALID_DATABASE_STATE_ERROR(reservationId, type))));
   }
 }
