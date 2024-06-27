@@ -3,10 +3,10 @@ package org.example.persistence.cache;
 import com.google.gson.Gson;
 import com.google.gson.GsonBuilder;
 import com.google.gson.reflect.TypeToken;
+import io.vavr.control.Option;
 import java.time.Duration;
 import java.util.List;
 import lombok.NonNull;
-import org.example.persistence.cache.exception.CacheEntryNotFound;
 import org.example.persistence.data.Holiday;
 import org.example.persistence.gson.HolidayAdapter;
 import org.example.persistence.gson.HolidayListAdapter;
@@ -26,15 +26,12 @@ public class HolidaysCacheDao {
     this.cache = cache;
   }
 
-  public List<Holiday> get(int year) throws Exception {
+  public Option<List<Holiday>> get(int year) {
     String key = getKey(year);
 
-    if (!cache.exists(key)) {
-      throw new CacheEntryNotFound(String.format("No cache entry found for key: %s", key));
-    }
-
-    String json = cache.get(key);
-    return g.fromJson(json, new TypeToken<List<Holiday>>() {}.getType());
+    return cache
+        .getOptional(key)
+        .map(json -> g.fromJson(json, new TypeToken<List<Holiday>>() {}.getType()));
   }
 
   public String getKey(int year) {

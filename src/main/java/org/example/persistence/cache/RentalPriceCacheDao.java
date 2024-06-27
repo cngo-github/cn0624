@@ -31,6 +31,7 @@ public class RentalPriceCacheDao {
   public Option<RentalPrice> getPrice(@NonNull ToolType type) {
     String key = getKey(type);
     Option<String> maybeJson = cache.getOptional(key);
+
     return maybeJson.map(j -> g.fromJson(j, RentalPrice.class));
   }
 

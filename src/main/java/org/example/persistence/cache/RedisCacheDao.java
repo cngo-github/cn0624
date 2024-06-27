@@ -33,23 +33,10 @@ public class RedisCacheDao implements CacheDao {
     clientPooled.setex(key, timeout.getSeconds(), value);
   }
 
-  public String get(@NotNull String key) {
-    LOGGER.trace("Get the value for the key: {}.", key);
-
-    return clientPooled.get(key);
-  }
-
-  public boolean exists(@NotNull String key) {
-    LOGGER.trace("Does the key: {} exists in the cache?", key);
-
-    return clientPooled.exists(key);
-  }
-
   public Option<String> getOptional(@NotNull String key) {
     LOGGER.trace("Get the value for the key: {}.", key);
 
-    String result = clientPooled.get(key);
-    return Option.when(result != null, result);
+    return Option.of(clientPooled.get(key));
   }
 
   @Override

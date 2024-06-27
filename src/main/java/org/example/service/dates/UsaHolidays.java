@@ -5,6 +5,7 @@ import com.google.common.cache.CacheLoader;
 import com.google.common.cache.LoadingCache;
 import com.google.gson.JsonObject;
 import com.google.gson.JsonParser;
+import io.vavr.control.Option;
 import java.io.IOException;
 import java.time.Duration;
 import java.time.LocalDate;
@@ -18,9 +19,9 @@ import org.apache.hc.core5.http.ClassicHttpRequest;
 import org.apache.hc.core5.http.io.entity.EntityUtils;
 import org.apache.hc.core5.http.io.support.ClassicRequestBuilder;
 import org.example.persistence.cache.CacheDao;
-import org.example.persistence.cache.exception.CacheEntryNotFound;
 import org.example.persistence.data.Holiday;
 import org.example.service.dates.domain.Holidays;
+import org.example.service.dates.exception.HolidaysUnavailable;
 import org.jetbrains.annotations.NotNull;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
@@ -38,19 +39,20 @@ public class UsaHolidays extends Holidays {
         @NotNull
         @Override
         public List<Holiday> load(@NonNull Integer key) throws Exception {
-          try {
-            return cache.get(key);
-          } catch (CacheEntryNotFound e) {
-            LOGGER.info(
-                String.format(
-                    "Unable to find the holidays for %s in the cache. Getting it from the API.",
-                    key));
+          return cache
+              .get(key)
+              .orElse(
+                  getFromApi(key)
+                      .map(
+                          h -> {
+                            cache.store(key, h);
 
-            List<Holiday> holidays = getFromApi(key);
-            cache.store(key, holidays);
-
-            return holidays;
-          }
+                            return h;
+                          }))
+              .getOrElseThrow(
+                  () ->
+                      new HolidaysUnavailable(
+                          String.format("The USA holidays for %d are unavailable.", key)));
         }
       };
 
@@ -77,35 +79,40 @@ public class UsaHolidays extends Holidays {
     return false;
   }
 
-  private List<Holiday> getFromApi(int year) throws IOException {
+  private Option<List<Holiday>> getFromApi(int year) throws IOException {
     String uri = String.format("%s/%d/%s", HOLIDAY_API, year, COUNTRY_CODE);
 
     try (CloseableHttpClient httpclient = HttpClients.createDefault()) {
       ClassicHttpRequest httpGet = ClassicRequestBuilder.get(uri).build();
 
-      return httpclient.execute(
-          httpGet,
-          response -> {
-            if (response.getCode() != 200) {
-              throw new IOException("Received an invalid response from the holidays API.");
-            }
+      List<Holiday> h =
+          httpclient.execute(
+              httpGet,
+              response -> {
+                if (response.getCode() != 200) {
+                  throw new IOException("Received an invalid response from the holidays API.");
+                }
 
-            String body = EntityUtils.toString(response.getEntity());
+                String body = EntityUtils.toString(response.getEntity());
 
-            return JsonParser.parseString(body).getAsJsonArray().asList().stream()
-                .filter(
-                    e -> HOLIDAY_NAMES.contains(e.getAsJsonObject().get("localName").getAsString()))
-                .map(
-                    e -> {
-                      JsonObject o = e.getAsJsonObject();
+                return JsonParser.parseString(body).getAsJsonArray().asList().stream()
+                    .filter(
+                        e ->
+                            HOLIDAY_NAMES.contains(
+                                e.getAsJsonObject().get("localName").getAsString()))
+                    .map(
+                        e -> {
+                          JsonObject o = e.getAsJsonObject();
 
-                      String name = o.get("localName").getAsString();
-                      String date = o.get("date").getAsString();
+                          String name = o.get("localName").getAsString();
+                          String date = o.get("date").getAsString();
 
-                      return new Holiday(name, date);
-                    })
-                .toList();
-          });
+                          return new Holiday(name, date);
+                        })
+                    .toList();
+              });
+
+      return Option.of(h);
     }
   }
 }
