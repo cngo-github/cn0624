@@ -42,6 +42,7 @@ public class ToolsSqliteDbDao implements ToolsDbDao {
         String query = String.format("SELECT brand, code, type from tools WHERE code like '%s'", code);
 
         return Try.of(() -> db.query(query))
+                .onFailure(e -> LOGGER.error(String.format("Failed to get the tool with code %s.", code), e))
                 .toOption()
                 .map(
                         rs -> {
@@ -57,7 +58,8 @@ public class ToolsSqliteDbDao implements ToolsDbDao {
 
                                     tools.add(t);
                                 }
-                            } catch (SQLException ignored) {
+                            } catch (SQLException e) {
+                                LOGGER.error(String.format("Failed to parse the tool data for code %s.", code), e);
                             }
 
                             return tools;
@@ -72,6 +74,7 @@ public class ToolsSqliteDbDao implements ToolsDbDao {
                         type);
 
         return Try.of(() -> db.query(query))
+                .onFailure(e -> LOGGER.error(String.format("Failed to get the price for tool %s.", type), e))
                 .toOption()
                 .map(
                         rs -> {
@@ -97,7 +100,8 @@ public class ToolsSqliteDbDao implements ToolsDbDao {
 
                                     prices.add(p);
                                 }
-                            } catch (SQLException ignored) {
+                            } catch (SQLException e) {
+                                LOGGER.error(String.format("Failed to parse the price data for tool %s.", type), e);
                             }
 
                             return prices;
